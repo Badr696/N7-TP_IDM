@@ -1,0 +1,49 @@
+[comment encoding = UTF-8 /]
+[module toTina('http://petrinet')]
+
+
+[template public generateElement(aPetri : Petri)]
+[comment @main/]
+
+[file (aPetri.nom + '.net', false, 'UTF-8')]
+net [aPetri.nom/] 
+[let pls : OrderedSet(Place) = aPetri.getPlaces()]
+	[for (pl : Place | pls)]
+pl  [pl.nom_zone/] ([pl.nbr_jetons/])
+	[/for]
+[/let]
+
+[let trs : OrderedSet(Transition) = aPetri.getTransitions()]
+     [for (tr : Transition | trs)]
+tr [tr.nom_zone/][for (lien : Lien | tr.getLiensPre())] [lien.predecesseur.nom_zone/][if (lien.is_read_arc = true)]?[lien.poids/][else][if (lien.poids > 1)]*[lien.poids/][/if][/if][/for] -> [for (lien : Lien | tr.getLiensSuc())][lien.successeur.nom_zone/]
+		[/for]
+     [/for]
+[/let]
+
+
+[/file]
+[/template]
+
+[query public getPlaces(p: Petri) : OrderedSet(Place) = 
+	p.elements->select( e | e.oclIsTypeOf(Place) )
+		->collect( e | e.oclAsType(Place) )
+		->asOrderedSet()
+/]
+
+[query public getTransitions(p: Petri) : OrderedSet(Transition) = 
+	p.elements->select( e | e.oclIsTypeOf(Transition) )
+		->collect( e | e.oclAsType(Transition) )
+		->asOrderedSet()
+/]
+
+[query public getLiensPre(z: Zone ) : OrderedSet(Lien) = 
+	z.predecesseurs -> asOrderedSet()
+/]
+
+[query public getLiensSuc(z: Zone ) : OrderedSet(Lien) = 
+	z.successeurs -> asOrderedSet()
+/]
+
+
+
+

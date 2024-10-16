@@ -1,0 +1,8 @@
+net caca 
+pl  pl1 (1)
+pl  pl2 (3)
+
+tr tr1 pl1?2 -> pl2
+tr tr2 pl2*3 -> pl1
+
+
